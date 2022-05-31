@@ -19,17 +19,24 @@ import (
 @Description:
 */
 
+// Client 客户端对象
 type Client struct {
 	Config *Config
 	Log    *zdpgo_log.Log
 }
 
+// GetAddress 获取连接地址
+func (c *Client) GetAddress() string {
+	return fmt.Sprintf("%s:%d",
+		c.Config.Client.Host,
+		c.Config.Client.Port)
+}
+
 // Upload 上传文件
-func (c *Client) Upload(target, username, password string, filedata []byte) string {
+func (c *Client) Upload(username, password string, filedata []byte) string {
 	// 连接NNTP服务
-	conn, err := cnntp.Dial("tcp", target)
+	conn, err := cnntp.Dial("tcp", c.GetAddress())
 	if err != nil {
-		fmt.Printf("nntp server %s connection failed: %v", target, err)
 		return ""
 	}
 
