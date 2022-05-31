@@ -271,10 +271,12 @@ func (tb *ServerBackend) Post(article *nntp.Article) error {
 
 // Authorized 是否开启权限校验
 func (tb *ServerBackend) Authorized() bool {
+	Log.Debug("是否已经校验成功了？")
 	return true
 }
 
 // Authenticate 校验用户名和密码
 func (tb *ServerBackend) Authenticate(user, pass string) (nntpserver.Backend, error) {
+	Log.Debug("后台引擎处理权限校验", "user", user, "pass", pass)
 	return nil, nntpserver.ErrAuthRejected
 }

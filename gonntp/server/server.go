@@ -99,14 +99,11 @@ type session struct {
 	group   *nntp.Group
 }
 
-// The Server handle.
+// Server 服务
 type Server struct {
-	// Handlers are dispatched by command name.
-	Handlers map[string]Handler
-	// The backend (your code) that provides data
-	Backend Backend
-	// The currently selected group.
-	group *nntp.Group
+	Handlers map[string]Handler // 处理器列表
+	Backend  Backend            // 后台引擎
+	group    *nntp.Group        // 分组
 }
 
 // NewServer builds a new server handle request to a backend.
@@ -137,14 +134,13 @@ func (e *NNTPError) Error() string {
 	return fmt.Sprintf("%d %s", e.Code, e.Msg)
 }
 
-func (s *session) dispatchCommand(cmd string, args []string,
-	c *textproto.Conn) (err error) {
-
+// dispatchCommand 分发CMD命令
+func (s *session) dispatchCommand(cmd string, args []string, c *textproto.Conn) (err error) {
 	handler, found := s.server.Handlers[strings.ToLower(cmd)]
 	if !found {
 		handler, found = s.server.Handlers[""]
 		if !found {
-			panic("No default handler.")
+			Log.Error("没有默认的处理器")
 		}
 	}
 	return handler(args, s, c)
@@ -216,17 +212,6 @@ func parseRange(spec string) (low, high int64) {
 	}
 	return l, h
 }
-
-/*
-   "0" or article number (see below)
-   Subject header content
-   From header content
-   Date header content
-   Message-ID header content
-   References header content
-   :bytes metadata item
-   :lines metadata item
-*/
 
 func handleOver(args []string, s *session, c *textproto.Conn) error {
 	if s.group == nil {
@@ -549,24 +534,37 @@ func handleMode(args []string, s *session, c *textproto.Conn) error {
 	return nil
 }
 
+// 处理权限校验信息
 func handleAuthInfo(args []string, s *session, c *textproto.Conn) error {
+	Log.Debug("处理权限及校验。。。")
 	if len(args) < 2 {
 		return ErrSyntax
 	}
+
+	// 参数名叫user
 	if strings.ToLower(args[0]) != "user" {
 		return ErrSyntax
 	}
 
+	// 已经校验成功了
 	if s.backend.Authorized() {
 		return c.PrintfLine("250 authenticated")
 	}
 
+	// 继续
 	c.PrintfLine("350 Continue")
 	a, err := c.ReadLine()
+	if err != nil {
+		Log.Error("读取一行失败", "error", err)
+	}
+
+	// 新的命令
 	parts := strings.SplitN(a, " ", 3)
 	if strings.ToLower(parts[0]) != "authinfo" || strings.ToLower(parts[1]) != "pass" {
 		return ErrSyntax
 	}
+
+	// 交给后台引擎处理权限校验
 	b, err := s.backend.Authenticate(args[1], parts[2])
 	if err == nil {
 		c.PrintfLine("250 authenticated")
