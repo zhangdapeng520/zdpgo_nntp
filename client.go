@@ -8,6 +8,7 @@ import (
 	"github.com/zhangdapeng520/zdpgo_nntp/cnntp"
 	"github.com/zhangdapeng520/zdpgo_password"
 	"io/ioutil"
+	"log"
 	"time"
 )
 
@@ -41,9 +42,9 @@ func (c *Client) Upload(username, password string, filedata []byte) string {
 	}
 
 	// 权限校验
-	//if err := conn.Authenticate("user", "pass"); err != nil {
-	//	log.Fatalf("Could not authenticate")
-	//}
+	if err := conn.Authenticate("user", "pass"); err != nil {
+		log.Fatalf("Could not authenticate")
+	}
 
 	// 上传POST
 	randID := "gXkSUkSclsRlURoYEKFJjtDtsBkEsCsj"

@@ -3,6 +3,7 @@ package zdpgo_nntp
 import (
 	"bytes"
 	"container/ring"
+	"fmt"
 	"github.com/zhangdapeng520/zdpgo_nntp/gonntp"
 	//"github.com/dustin/go-nntp"
 	//nntpserver "github.com/dustin/go-nntp/server"
@@ -183,7 +184,7 @@ func (tb *ServerBackend) GetArticles(group *nntp.Group,
 
 	log.Printf("Getting articles from %d to %d", from, to)
 
-	rv := []nntpserver.NumberedArticle{}
+	var rv []nntpserver.NumberedArticle
 	gs.articles.Do(func(v interface{}) {
 		if v != nil {
 			if aref, ok := v.(articleRef); ok {
@@ -224,27 +225,28 @@ func (tb *ServerBackend) decr(msgid string) {
 
 // Post 新建文章
 func (tb *ServerBackend) Post(article *nntp.Article) error {
-	log.Printf("Got headers: %#v", article.Header)
-	b := []byte{}
+	// 读取文章内容
+	var b []byte
 	buf := bytes.NewBuffer(b)
 	n, err := io.Copy(buf, article.Body)
 	if err != nil {
+		Log.Error("读取文章内容失败", "error", err, "length", n)
 		return err
 	}
-	log.Printf("Read %d bytes of body", n)
 
+	// 查看文章是否已存在
 	a := articleStorage{
 		headers:  article.Header,
 		body:     buf.String(),
 		refcount: 0,
 	}
-
 	msgID := a.headers.Get("Message-Id")
-
 	if _, ok := tb.articles[msgID]; ok {
+		Log.Warning("该文章已存在", "msgid", msgID)
 		return nntpserver.ErrPostingFailed
 	}
 
+	// 保存到分组
 	for _, g := range article.Header["Newsgroups"] {
 		if g, ok := tb.groups[g]; ok {
 			g.articles = g.articles.Next()
@@ -260,11 +262,9 @@ func (tb *ServerBackend) Post(article *nntp.Article) error {
 				msgID,
 				g.group.High,
 			}
-			log.Printf("Placed %v", g.articles.Value)
 			a.refcount++
 			g.group.Count = int64(g.articles.Len())
-
-			log.Printf("Stored %v in %v", msgID, g.group.Name)
+			Log.Debug("保存文章成功", "msgid", msgID, "value", g.articles.Value, "groupName", g.group.Name)
 		}
 	}
 
@@ -284,6 +284,7 @@ func (tb *ServerBackend) Authorized() bool {
 
 // Authenticate 校验用户名和密码
 func (tb *ServerBackend) Authenticate(user, pass string) (nntpserver.Backend, error) {
+	fmt.Println("=================调用了权限校验方法", user, pass)
 	return nil, nntpserver.ErrAuthRejected
 }
 

@@ -13,6 +13,8 @@ import (
 @Description:
 */
 
+var Log = zdpgo_log.NewWithDebug(true, "logs/zdpgo/zdpgo_nntp.log")
+
 type Nntp struct {
 	Config *Config
 	Log    *zdpgo_log.Log
@@ -30,6 +32,8 @@ func NewWithConfig(config *Config) *Nntp {
 		config.LogFilePath = "logs/zdpgo/zdpgo_nntp.log"
 	}
 	n.Log = zdpgo_log.NewWithDebug(config.Debug, config.LogFilePath)
+	nntpserver.Log = n.Log
+	Log = n.Log
 
 	// 配置
 	if config.Server.Host == "" {

@@ -3,11 +3,12 @@ package nntpserver
 
 import (
 	"fmt"
+	"github.com/zhangdapeng520/zdpgo_log"
+
 	//"github.com/dustin/go-nntp"
 	"github.com/zhangdapeng520/zdpgo_nntp/gonntp"
 
 	"io"
-	"log"
 	"math"
 	"net"
 	"net/textproto"
@@ -20,6 +21,10 @@ type NNTPError struct {
 	Code int
 	Msg  string
 }
+
+var (
+	Log *zdpgo_log.Log
+)
 
 // ErrNoSuchGroup is returned for a request for a group that can't be found.
 var ErrNoSuchGroup = &NNTPError{411, "No such newsgroup"}
@@ -76,15 +81,13 @@ type NumberedArticle struct {
 	Article *nntp.Article
 }
 
-// The Backend that provides the things and does the stuff.
+// Backend 后台引擎接口
 type Backend interface {
 	ListGroups(max int) ([]*nntp.Group, error)
 	GetGroup(name string) (*nntp.Group, error)
 	GetArticle(group *nntp.Group, id string) (*nntp.Article, error)
 	GetArticles(group *nntp.Group, from, to int64) ([]NumberedArticle, error)
 	Authorized() bool
-	// Authenticate and optionally swap out the backend for this session.
-	// You may return nil to continue using the same backend.
 	Authenticate(user, pass string) (Backend, error)
 	AllowPost() bool
 	Post(article *nntp.Article) error
@@ -147,42 +150,47 @@ func (s *session) dispatchCommand(cmd string, args []string,
 	return handler(args, s, c)
 }
 
-// Process an NNTP session.
+// Process 处理NNTP会话
 func (s *Server) Process(nc net.Conn) {
 	defer nc.Close()
 	c := textproto.NewConn(nc)
 
+	// 创建session
 	sess := &session{
 		server:  s,
 		backend: s.Backend,
 		group:   nil,
 	}
 
+	// 返回客户端一个成功的响应
 	c.PrintfLine("200 Hello!")
 	for {
+		// 读取一行数据
 		l, err := c.ReadLine()
 		if err != nil {
-			log.Printf("Error reading from client, dropping conn: %v", err)
+			Log.Error("读取一行数据失败", "error", err)
 			return
 		}
+
+		// 获取命令
 		cmd := strings.Split(l, " ")
-		log.Printf("Got cmd:  %+v", cmd)
-		args := []string{}
+		Log.Debug("读取到命令", "cmd", cmd)
+		var args []string
 		if len(cmd) > 1 {
 			args = cmd[1:]
 		}
+
+		// 分发命令
 		err = sess.dispatchCommand(cmd[0], args, c)
 		if err != nil {
 			_, isNNTPError := err.(*NNTPError)
 			switch {
 			case err == io.EOF:
-				// Drop this connection silently. They hung up
 				return
 			case isNNTPError:
-				c.PrintfLine(err.Error())
+				c.PrintfLine(err.Error()) // 返回错误信息
 			default:
-				log.Printf("Error dispatching command, dropping conn: %v",
-					err)
+				Log.Error("分发命令失败", "error", err)
 				return
 			}
 		}

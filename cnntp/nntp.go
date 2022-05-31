@@ -256,8 +256,7 @@ func (c *Conn) readStrings() ([]string, error) {
 	return []string(sv), nil
 }
 
-// Authenticate logs in to the NNTP server.
-// It only sends the password if the server requires one.
+// Authenticate 校验登录权限
 func (c *Conn) Authenticate(username, password string) error {
 	code, _, err := c.cmd(2, "AUTHINFO USER %s", username)
 	if code/100 == 3 {
@@ -266,11 +265,7 @@ func (c *Conn) Authenticate(username, password string) error {
 	return err
 }
 
-// cmd executes an NNTP command:
-// It sends the command given by the format and arguments, and then
-// reads the response line. If expectCode > 0, the status code on the
-// response line must match it. 1 digit expectCodes only check the first
-// digit of the status code, etc.
+// cmd 执行一个nntp命令
 func (c *Conn) cmd(expectCode uint, format string, args ...interface{}) (code uint, line string, err error) {
 	if c.close {
 		return 0, "", ProtocolError("connection closed")
