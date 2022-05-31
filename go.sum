@@ -1,0 +1,10 @@
+github.com/dustin/go-couch v0.0.0-20160816170231-8251128dab73/go.mod h1:WG/TWzFd/MRvOZ4jjna3FQ+K8AKhb2jOw4S2JMw9VKI=
+github.com/dustin/go-nntp v0.0.0-20210723005859-f00d51cf8cc1 h1:R90ND7acg9HKYj3oJBKKefk73DULdC7IlcnS7MV0X1s=
+github.com/dustin/go-nntp v0.0.0-20210723005859-f00d51cf8cc1/go.mod h1:elGbp3dKCIIdwu6jm3y6L93EVn+I6MSzYrcZXhpNS3Y=
+github.com/dustin/httputil v0.0.0-20170305193905-c47743f54f89/go.mod h1:ZoDWdnxro8Kesk3zrCNOHNFWtajFPSnDMjVEjGjQu/0=
+github.com/zhangdapeng520/zdpgo_log v1.3.4 h1:hHB+ELh0zaBe5NLyASTDZ1qFnpkiFcOM582Phen1B7w=
+github.com/zhangdapeng520/zdpgo_log v1.3.4/go.mod h1:Qnr8tZCpmDWqRfJpw0r5ClUNqdOJwLNXIyXA2IGXv6k=
+github.com/zhangdapeng520/zdpgo_password v1.1.9 h1:M6mqttOd8BKOnRwxi4y5wABuNyGH1BbLDrgdVUhoa0M=
+github.com/zhangdapeng520/zdpgo_password v1.1.9/go.mod h1:a5k1QLtuTm5Gzjnn+13UqJKTul/xFAl0cPYvsRC35+I=
+golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064 h1:S25/rfnfsMVgORT4/J61MJ7rdyseOZOyvLIrZEZ7s6s=
+golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
