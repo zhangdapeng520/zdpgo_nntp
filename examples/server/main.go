@@ -4,7 +4,6 @@ import (
 	"github.com/zhangdapeng520/zdpgo_nntp"
 	//"github.com/dustin/go-nntp/server"
 	"github.com/zhangdapeng520/zdpgo_nntp/gonntp/server"
-	"net"
 )
 
 /*
@@ -16,25 +15,23 @@ import (
 */
 
 func main() {
-	// 获取地址
-	a, err := net.ResolveTCPAddr("tcp", ":1119")
+	// 获取监听器
+	n := zdpgo_nntp.NewWithConfig(&zdpgo_nntp.Config{
+		Debug: true,
+	})
+	server := n.GetServer()
+	listener, err := server.GetListener()
 	if err != nil {
 		panic(err)
 	}
-
-	// 创建监听
-	l, err := net.ListenTCP("tcp", a)
-	if err != nil {
-		panic(err)
-	}
-	defer l.Close()
+	defer listener.Close()
 
 	// 启动服务
 	s := nntpserver.NewServer(&zdpgo_nntp.DefaultBackend)
 
 	// 接收客户端信息
 	for {
-		c, err := l.AcceptTCP()
+		c, err := listener.AcceptTCP()
 		if err != nil {
 			panic(err)
 		}

@@ -16,7 +16,7 @@ import (
 */
 
 func main() {
-	var nntpServer = "127.0.0.1:1119"
+	var nntpServer = "127.0.0.1:35333"
 	var dlpUser = "user"
 	var dlpPassword = "password"
 

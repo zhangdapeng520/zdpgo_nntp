@@ -9,6 +9,13 @@ package zdpgo_nntp
 */
 
 type Config struct {
-	Debug       bool   `yaml:"debug" json:"debug"`
-	LogFilePath string `yaml:"log_file_path" json:"log_file_path"`
+	Debug       bool     `yaml:"debug" json:"debug"`
+	LogFilePath string   `yaml:"log_file_path" json:"log_file_path"`
+	Server      HttpInfo `yaml:"server" json:"server"`
+	Client      HttpInfo `yaml:"client" json:"client"`
+}
+
+type HttpInfo struct {
+	Host string `yaml:"host" json:"host"`
+	Port int    `yaml:"port" json:"port"`
 }
