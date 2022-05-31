@@ -8,6 +8,7 @@ import (
 	"github.com/zhangdapeng520/zdpgo_nntp/cnntp"
 	"github.com/zhangdapeng520/zdpgo_uuid"
 	"io/ioutil"
+	"strings"
 	"time"
 )
 
@@ -192,4 +193,36 @@ func (c *Client) GetArticle(uuid string) (*Article, error) {
 
 	// 返回
 	return article, nil
+}
+
+// UploadFileAndCheckMd5 上传文件并检查MD5
+func (c *Client) UploadFileAndCheckMd5(filePath string) bool {
+	// 读取文件
+	fileData, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		c.Log.Error("读取文件失败", "error", err, "filePath", filePath)
+		return false
+	}
+	md5Temp := password.Hash.Md5.EncryptStringNoKey(strings.TrimSpace(string(fileData)))
+
+	// 添加文章
+	article := &Article{
+		Content: string(fileData),
+	}
+	err = c.AddArticle(article)
+	if err != nil {
+		c.Log.Error("上传文件失败", "error", err)
+		return false
+	}
+
+	// 获取文章
+	getArticle, err := c.GetArticle(article.Uuid)
+	if err != nil {
+		c.Log.Error("获取上传内容失败", "error", err)
+		return false
+	}
+	md5Content := password.Hash.Md5.EncryptStringNoKey(strings.TrimSpace(getArticle.Content))
+
+	// 计算匹配结果并返回
+	return md5Temp == md5Content
 }

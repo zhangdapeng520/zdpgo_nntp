@@ -9,10 +9,10 @@ package zdpgo_nntp
 */
 
 import (
-	"github.com/zhangdapeng520/zdpgo_uuid"
+	"github.com/zhangdapeng520/zdpgo_password"
 )
 
 var (
-	Uuid  = zdpgo_uuid.UUID()
-	auths map[string]Auth
+	auths    map[string]Auth
+	password = zdpgo_password.New(zdpgo_password.PasswordConfig{})
 )

@@ -1,10 +1,8 @@
 package main
 
 import (
+	"fmt"
 	"github.com/zhangdapeng520/zdpgo_nntp"
-	"github.com/zhangdapeng520/zdpgo_password"
-	"io/ioutil"
-	"strings"
 )
 
 /*
@@ -23,34 +21,9 @@ func main() {
 		Debug: true,
 	})
 	client := n.GetClient()
-
-	// 计算md5
-	fileData, err := ioutil.ReadFile(fileName)
-	if err != nil {
-		panic(err)
-	}
-	p := zdpgo_password.New(zdpgo_password.PasswordConfig{})
-	md5Temp := p.Hash.Md5.EncryptStringNoKey(strings.TrimSpace(string(fileData)))
-	client.Log.Debug("上传文件", fileName, md5Temp, "data", string(fileData))
-
-	// 添加文章
-	article := &zdpgo_nntp.Article{
-		Content: string(fileData),
-	}
-	err = client.AddArticle(article)
-	if err != nil {
-		panic(err)
-	}
-
-	// 获取文章
-	getArticle, err := client.GetArticle(article.Uuid)
-	if err != nil {
-		panic(err)
-	}
-	md5Content := p.Hash.Md5.EncryptStringNoKey(strings.TrimSpace(getArticle.Content))
-	if md5Temp == md5Content {
-		client.Log.Debug("匹配成功", md5Temp, md5Content)
+	if client.UploadFileAndCheckMd5(fileName) {
+		fmt.Println("上传文件成功")
 	} else {
-		client.Log.Debug("匹配失败", md5Temp, md5Content, "content", getArticle.Content)
+		fmt.Println("上传文件失败")
 	}
 }
