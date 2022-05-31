@@ -67,7 +67,7 @@ type Group struct {
 	Status string
 }
 
-// An Article represents an NNTP article.
+// Article NNTP文章
 type Article struct {
 	Header map[string][]string
 	Body   io.Reader

@@ -14,8 +14,8 @@ type Config struct {
 	Auths       map[string]Auth `yaml:"auths" json:"auths"`
 	Server      HttpInfo        `yaml:"server" json:"server"`
 	Client      HttpInfo        `yaml:"client" json:"client"`
-	Groups      []string        `yaml:"groups" json:"groups"`
-	From        []string        `yaml:"from" json:"from"`
+	Group       string          `yaml:"group" json:"group"`
+	From        string          `yaml:"from" json:"from"`
 }
 
 type HttpInfo struct {

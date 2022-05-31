@@ -59,11 +59,11 @@ func NewWithConfig(config *Config) *Nntp {
 			"zhangdapeng520": {"zhangdapeng520", "zhangdapeng520"},
 		}
 	}
-	if config.Groups == nil || len(config.Groups) == 0 {
-		config.Groups = []string{"zhangdapeng520.all"}
+	if config.Group == "" {
+		config.Group = "zhangdapeng520.all"
 	}
-	if config.From == nil || len(config.From) == 0 {
-		config.From = []string{"<zhangdapeng520 <zhangdapeng520@zdpgo.com>>"}
+	if config.From == "" {
+		config.From = "<zhangdapeng520 <zhangdapeng520@zdpgo.com>>"
 	}
 	n.Config = config
 
