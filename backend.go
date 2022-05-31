@@ -3,7 +3,6 @@ package zdpgo_nntp
 import (
 	"bytes"
 	"container/ring"
-	"fmt"
 	"github.com/zhangdapeng520/zdpgo_nntp/gonntp"
 	//"github.com/dustin/go-nntp"
 	//nntpserver "github.com/dustin/go-nntp/server"
@@ -29,14 +28,13 @@ const maxArticles = 1000
 
 // 文章引用
 type articleRef struct {
-	msgid string
+	msgId string
 	num   int64
 }
 
 // 分组存储
 type groupStorage struct {
-	group *nntp.Group
-	// article refs
+	group    *nntp.Group
 	articles *ring.Ring
 }
 
@@ -44,15 +42,13 @@ type groupStorage struct {
 type articleStorage struct {
 	headers  textproto.MIMEHeader
 	body     string
-	refcount int
+	refCount int
 }
 
 // ServerBackend 服务后台
 type ServerBackend struct {
-	// group name -> group storage
-	groups map[string]*groupStorage
-	// message ID -> article
-	articles map[string]*articleStorage
+	groups   map[string]*groupStorage   // 分组
+	articles map[string]*articleStorage // 文章
 }
 
 // DefaultBackend 默认后台
@@ -74,7 +70,7 @@ func init() {
 
 // ListGroups 分组列表
 func (tb *ServerBackend) ListGroups(max int) ([]*nntp.Group, error) {
-	rv := []*nntp.Group{}
+	var rv []*nntp.Group
 	for _, g := range tb.groups {
 		rv = append(rv, g.group)
 	}
@@ -125,29 +121,28 @@ func findInRing(in *ring.Ring, f func(r interface{}) bool) *ring.Ring {
 // GetArticle 获取文章
 func (tb *ServerBackend) GetArticle(group *nntp.Group, id string) (*nntp.Article, error) {
 
-	msgID := id
+	msgId := id
 	var a *articleStorage
 
-	if intid, err := strconv.ParseInt(id, 10, 64); err == nil {
-		msgID = ""
-		// by int ID.  Gotta go find it.
+	if intId, err := strconv.ParseInt(id, 10, 64); err == nil {
+		msgId = ""
 		if groupStorage, ok := tb.groups[group.Name]; ok {
 			r := findInRing(groupStorage.articles, func(v interface{}) bool {
 				if v != nil {
 					log.Printf("Looking at %v", v)
 				}
-				if aref, ok := v.(articleRef); ok && aref.num == intid {
+				if aref, ok := v.(articleRef); ok && aref.num == intId {
 					return true
 				}
 				return false
 			})
 			if aref, ok := r.Value.(articleRef); ok {
-				msgID = aref.msgid
+				msgId = aref.msgId
 			}
 		}
 	}
 
-	a = tb.articles[msgID]
+	a = tb.articles[msgId]
 	if a == nil {
 		return nil, nntpserver.ErrInvalidMessageID
 	}
@@ -156,20 +151,20 @@ func (tb *ServerBackend) GetArticle(group *nntp.Group, id string) (*nntp.Article
 }
 
 // 排序的文章列表
-type nalist []nntpserver.NumberedArticle
+type articleList []nntpserver.NumberedArticle
 
 // Len 文章列表长度
-func (n nalist) Len() int {
+func (n articleList) Len() int {
 	return len(n)
 }
 
 // Less 是否小于
-func (n nalist) Less(i, j int) bool {
+func (n articleList) Less(i, j int) bool {
 	return n[i].Num < n[j].Num
 }
 
 // Swap 交换
-func (n nalist) Swap(i, j int) {
+func (n articleList) Swap(i, j int) {
 	n[i], n[j] = n[j], n[i]
 }
 
@@ -179,20 +174,19 @@ func (tb *ServerBackend) GetArticles(group *nntp.Group,
 
 	gs, ok := tb.groups[group.Name]
 	if !ok {
+		Log.Error("获取分组失败", "name", group.Name)
 		return nil, nntpserver.ErrNoSuchGroup
 	}
 
-	log.Printf("Getting articles from %d to %d", from, to)
-
-	var rv []nntpserver.NumberedArticle
+	var articles []nntpserver.NumberedArticle
 	gs.articles.Do(func(v interface{}) {
 		if v != nil {
 			if aref, ok := v.(articleRef); ok {
 				if aref.num >= from && aref.num <= to {
-					a, ok := tb.articles[aref.msgid]
+					a, ok := tb.articles[aref.msgId]
 					if ok {
 						article := mkArticle(a)
-						rv = append(rv,
+						articles = append(articles,
 							nntpserver.NumberedArticle{
 								Num:     aref.num,
 								Article: article})
@@ -202,9 +196,8 @@ func (tb *ServerBackend) GetArticles(group *nntp.Group,
 		}
 	})
 
-	sort.Sort(nalist(rv))
-
-	return rv, nil
+	sort.Sort(articleList(articles))
+	return articles, nil
 }
 
 // AllowPost 是否运行POST提交
@@ -213,12 +206,11 @@ func (tb *ServerBackend) AllowPost() bool {
 }
 
 // decr 删除文章
-func (tb *ServerBackend) decr(msgid string) {
-	if a, ok := tb.articles[msgid]; ok {
-		a.refcount--
-		if a.refcount == 0 {
-			log.Printf("Getting rid of %v", msgid)
-			delete(tb.articles, msgid)
+func (tb *ServerBackend) decr(msgId string) {
+	if a, ok := tb.articles[msgId]; ok {
+		a.refCount--
+		if a.refCount == 0 {
+			delete(tb.articles, msgId)
 		}
 	}
 }
@@ -238,11 +230,11 @@ func (tb *ServerBackend) Post(article *nntp.Article) error {
 	a := articleStorage{
 		headers:  article.Header,
 		body:     buf.String(),
-		refcount: 0,
+		refCount: 0,
 	}
-	msgID := a.headers.Get("Message-Id")
-	if _, ok := tb.articles[msgID]; ok {
-		Log.Warning("该文章已存在", "msgid", msgID)
+	msgId := a.headers.Get("Message-Id")
+	if _, ok := tb.articles[msgId]; ok {
+		Log.Warning("该文章已存在", "msgId", msgId)
 		return nntpserver.ErrPostingFailed
 	}
 
@@ -252,24 +244,24 @@ func (tb *ServerBackend) Post(article *nntp.Article) error {
 			g.articles = g.articles.Next()
 			if g.articles.Value != nil {
 				aref := g.articles.Value.(articleRef)
-				tb.decr(aref.msgid)
+				tb.decr(aref.msgId)
 			}
 			if g.articles.Value != nil || g.group.Low == 0 {
 				g.group.Low++
 			}
 			g.group.High++
 			g.articles.Value = articleRef{
-				msgID,
+				msgId,
 				g.group.High,
 			}
-			a.refcount++
+			a.refCount++
 			g.group.Count = int64(g.articles.Len())
-			Log.Debug("保存文章成功", "msgid", msgID, "value", g.articles.Value, "groupName", g.group.Name)
+			Log.Debug("保存文章成功", "msgId", msgId, "value", g.articles.Value, "groupName", g.group.Name)
 		}
 	}
 
-	if a.refcount > 0 {
-		tb.articles[msgID] = &a
+	if a.refCount > 0 {
+		tb.articles[msgId] = &a
 	} else {
 		return nntpserver.ErrPostingFailed
 	}
@@ -284,13 +276,5 @@ func (tb *ServerBackend) Authorized() bool {
 
 // Authenticate 校验用户名和密码
 func (tb *ServerBackend) Authenticate(user, pass string) (nntpserver.Backend, error) {
-	fmt.Println("=================调用了权限校验方法", user, pass)
 	return nil, nntpserver.ErrAuthRejected
-}
-
-// 出错了
-func maybefatal(err error, f string, a ...interface{}) {
-	if err != nil {
-		log.Fatalf(f, a...)
-	}
 }
