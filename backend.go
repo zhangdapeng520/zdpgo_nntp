@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"container/ring"
 	"github.com/zhangdapeng520/zdpgo_nntp/gonntp"
-	//"github.com/dustin/go-nntp"
-	//nntpserver "github.com/dustin/go-nntp/server"
 	nntpserver "github.com/zhangdapeng520/zdpgo_nntp/gonntp/server"
 	"io"
 	"log"
@@ -49,6 +47,7 @@ type articleStorage struct {
 type ServerBackend struct {
 	groups   map[string]*groupStorage   // 分组
 	articles map[string]*articleStorage // 文章
+	isLogin  bool                       // 是否已登录
 }
 
 // DefaultBackend 默认后台
@@ -270,13 +269,18 @@ func (tb *ServerBackend) Post(article *nntp.Article) error {
 }
 
 // Authorized 是否开启权限校验
-func (tb *ServerBackend) Authorized() bool {
-	Log.Debug("是否已经校验成功了？")
-	return true
+func (s *ServerBackend) Authorized() bool {
+	return s.isLogin
 }
 
 // Authenticate 校验用户名和密码
-func (tb *ServerBackend) Authenticate(user, pass string) (nntpserver.Backend, error) {
+func (s *ServerBackend) Authenticate(user, pass string) (nntpserver.Backend, error) {
 	Log.Debug("后台引擎处理权限校验", "user", user, "pass", pass)
+	for k, v := range auths {
+		if user == k && pass == v.Password {
+			s.isLogin = true
+			return &DefaultBackend, nil
+		}
+	}
 	return nil, nntpserver.ErrAuthRejected
 }

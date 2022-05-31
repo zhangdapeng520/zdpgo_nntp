@@ -48,7 +48,15 @@ func NewWithConfig(config *Config) *Nntp {
 	if config.Client.Port == 0 {
 		config.Client.Port = 35333
 	}
+	if config.Auths == nil || len(config.Auths) == 0 {
+		config.Auths = map[string]Auth{
+			"zhangdapeng520": {"zhangdapeng520", "zhangdapeng520"},
+		}
+	}
 	n.Config = config
+
+	// 权限数据
+	auths = n.Config.Auths
 
 	// 返回
 	return n

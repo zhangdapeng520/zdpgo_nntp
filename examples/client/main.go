@@ -16,8 +16,8 @@ import (
 */
 
 func main() {
-	var dlpUser = "user"
-	var dlpPassword = "password"
+	var username = "zhangdapeng520"
+	var password = "zhangdapeng520"
 	fileName := "test.txt"
 
 	// 获取客户端
@@ -35,7 +35,7 @@ func main() {
 	md5Temp := p.Hash.Md5.EncryptNoKey(fileData)
 	fmt.Printf("文件 %s md5=%s\n", fileName, md5Temp)
 
-	md5Str := client.Upload(dlpUser, dlpPassword, fileData)
+	md5Str := client.Upload(username, password, fileData)
 	if md5Temp == md5Str {
 		fmt.Printf("上传文件 %s 成功，上传方式 NNTP", fileName)
 	} else {

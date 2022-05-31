@@ -13,5 +13,6 @@ import (
 )
 
 var (
-	Uuid = zdpgo_uuid.UUID()
+	Uuid  = zdpgo_uuid.UUID()
+	auths map[string]Auth
 )
