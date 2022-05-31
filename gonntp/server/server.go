@@ -164,7 +164,6 @@ func (s *Server) Process(nc net.Conn) {
 		// 读取一行数据
 		l, err := c.ReadLine()
 		if err != nil {
-			Log.Error("读取一行数据失败", "error", err)
 			return
 		}
 

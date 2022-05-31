@@ -28,6 +28,7 @@ func (s *Server) GetAddress() string {
 		s.Config.Server.Host,
 		s.Config.Server.Port)
 }
+
 func (s *Server) GetListener() (*net.TCPListener, error) {
 	// 获取地址
 	addr, err := net.ResolveTCPAddr("tcp", s.GetAddress())

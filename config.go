@@ -14,11 +14,15 @@ type Config struct {
 	Auths       map[string]Auth `yaml:"auths" json:"auths"`
 	Server      HttpInfo        `yaml:"server" json:"server"`
 	Client      HttpInfo        `yaml:"client" json:"client"`
+	Groups      []string        `yaml:"groups" json:"groups"`
+	From        []string        `yaml:"from" json:"from"`
 }
 
 type HttpInfo struct {
-	Host string `yaml:"host" json:"host"`
-	Port int    `yaml:"port" json:"port"`
+	Host     string `yaml:"host" json:"host"`
+	Port     int    `yaml:"port" json:"port"`
+	Username string `yaml:"username" json:"username"`
+	Password string `yaml:"password" json:"password"`
 }
 
 type Auth struct {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/zhangdapeng520/zdpgo_nntp"
 	"github.com/zhangdapeng520/zdpgo_password"
+	"github.com/zhangdapeng520/zdpgo_uuid"
 	"io/ioutil"
 )
 
@@ -16,8 +17,6 @@ import (
 */
 
 func main() {
-	var username = "zhangdapeng520"
-	var password = "zhangdapeng520"
 	fileName := "test.txt"
 
 	// 获取客户端
@@ -35,8 +34,11 @@ func main() {
 	md5Temp := p.Hash.Md5.EncryptNoKey(fileData)
 	fmt.Printf("文件 %s md5=%s\n", fileName, md5Temp)
 
-	md5Str := client.Upload(username, password, fileData)
-	if md5Temp == md5Str {
+	response, err := client.PostBytes(zdpgo_uuid.UUID(), fileData)
+	if err != nil {
+		panic(err)
+	}
+	if md5Temp == response.Text {
 		fmt.Printf("上传文件 %s 成功，上传方式 NNTP", fileName)
 	} else {
 		fmt.Printf("上传文件 %s 失败，上传方式 NNTP,MD5不匹配", fileName)

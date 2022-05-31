@@ -48,10 +48,22 @@ func NewWithConfig(config *Config) *Nntp {
 	if config.Client.Port == 0 {
 		config.Client.Port = 35333
 	}
+	if config.Client.Username == "" {
+		config.Client.Username = "zhangdapeng520"
+	}
+	if config.Client.Password == "" {
+		config.Client.Password = "zhangdapeng520"
+	}
 	if config.Auths == nil || len(config.Auths) == 0 {
 		config.Auths = map[string]Auth{
 			"zhangdapeng520": {"zhangdapeng520", "zhangdapeng520"},
 		}
+	}
+	if config.Groups == nil || len(config.Groups) == 0 {
+		config.Groups = []string{"zhangdapeng520.all"}
+	}
+	if config.From == nil || len(config.From) == 0 {
+		config.From = []string{"<zhangdapeng520 <zhangdapeng520@zdpgo.com>>"}
 	}
 	n.Config = config
 

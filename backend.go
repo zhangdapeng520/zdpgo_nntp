@@ -58,10 +58,10 @@ var DefaultBackend = ServerBackend{
 
 // 初始化
 func init() {
-	DefaultBackend.groups["example.all"] = &groupStorage{
+	DefaultBackend.groups["zhangdapeng520.all"] = &groupStorage{
 		group: &nntp.Group{
-			Name:        "example.all",
-			Description: "A test.",
+			Name:        "zhangdapeng520.all",
+			Description: "默认的分组",
 			Posting:     nntp.PostingPermitted},
 		articles: ring.New(maxArticles),
 	}
