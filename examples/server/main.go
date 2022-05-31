@@ -18,18 +18,5 @@ func main() {
 		Debug: true,
 	})
 	server := n.GetServer()
-	listener, err := server.GetListener()
-	if err != nil {
-		panic(err)
-	}
-	defer listener.Close()
-
-	// 接收客户端信息
-	for {
-		c, err := listener.AcceptTCP()
-		if err != nil {
-			panic(err)
-		}
-		go server.Handle(c)
-	}
+	server.Run()
 }

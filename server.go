@@ -51,3 +51,22 @@ func (s *Server) GetListener() (*net.TCPListener, error) {
 func (s *Server) Handle(conn net.Conn) {
 	s.NntpServer.Process(conn)
 }
+
+// Run 运行服务
+func (s *Server) Run() {
+	listener, err := s.GetListener()
+	if err != nil {
+		s.Log.Panic("创建监听器失败", "error", err)
+	}
+	defer listener.Close()
+
+	// 接收客户端信息
+	var conn net.Conn
+	for {
+		conn, err = listener.AcceptTCP()
+		if err != nil {
+			s.Log.Error("获取客户端连接失败", "error", err)
+		}
+		go s.Handle(conn)
+	}
+}
