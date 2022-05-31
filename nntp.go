@@ -1,6 +1,9 @@
 package zdpgo_nntp
 
-import "github.com/zhangdapeng520/zdpgo_log"
+import (
+	"github.com/zhangdapeng520/zdpgo_log"
+	nntpserver "github.com/zhangdapeng520/zdpgo_nntp/gonntp/server"
+)
 
 /*
 @Time : 2022/5/30 20:49
@@ -58,7 +61,8 @@ func (n *Nntp) GetClient() *Client {
 // GetServer 获取服务对象
 func (n *Nntp) GetServer() *Server {
 	return &Server{
-		Config: n.Config,
-		Log:    n.Log,
+		Config:     n.Config,
+		Log:        n.Log,
+		NntpServer: nntpserver.NewServer(&DefaultBackend),
 	}
 }

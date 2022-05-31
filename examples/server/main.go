@@ -2,8 +2,6 @@ package main
 
 import (
 	"github.com/zhangdapeng520/zdpgo_nntp"
-	//"github.com/dustin/go-nntp/server"
-	"github.com/zhangdapeng520/zdpgo_nntp/gonntp/server"
 )
 
 /*
@@ -26,15 +24,12 @@ func main() {
 	}
 	defer listener.Close()
 
-	// 启动服务
-	s := nntpserver.NewServer(&zdpgo_nntp.DefaultBackend)
-
 	// 接收客户端信息
 	for {
 		c, err := listener.AcceptTCP()
 		if err != nil {
 			panic(err)
 		}
-		go s.Process(c)
+		go server.Handle(c)
 	}
 }

@@ -3,6 +3,7 @@ package zdpgo_nntp
 import (
 	"fmt"
 	"github.com/zhangdapeng520/zdpgo_log"
+	nntpserver "github.com/zhangdapeng520/zdpgo_nntp/gonntp/server"
 	"net"
 )
 
@@ -14,9 +15,11 @@ import (
 @Description:
 */
 
+// Server NNTP服务
 type Server struct {
-	Config *Config
-	Log    *zdpgo_log.Log
+	Config     *Config
+	Log        *zdpgo_log.Log
+	NntpServer *nntpserver.Server
 }
 
 // GetAddress 获取服务地址
@@ -42,4 +45,9 @@ func (s *Server) GetListener() (*net.TCPListener, error) {
 
 	// 返回
 	return listener, nil
+}
+
+// Handle 处理连接
+func (s *Server) Handle(conn net.Conn) {
+	s.NntpServer.Process(conn)
 }
