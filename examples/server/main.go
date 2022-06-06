@@ -16,6 +16,9 @@ func main() {
 	// 获取监听器
 	n := zdpgo_nntp.NewWithConfig(&zdpgo_nntp.Config{
 		Debug: true,
+		Server: zdpgo_nntp.HttpInfo{
+			Port: 8887,
+		},
 	})
 	server := n.GetServer()
 	server.Run()

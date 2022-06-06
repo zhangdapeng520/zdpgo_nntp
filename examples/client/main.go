@@ -19,6 +19,27 @@ func main() {
 	// 获取客户端
 	n := zdpgo_nntp.NewWithConfig(&zdpgo_nntp.Config{
 		Debug: true,
+		Client: zdpgo_nntp.HttpInfo{
+			Host:     "127.0.0.1",
+			Port:     8887,
+			Username: "zhangdapeng520",
+			Password: "zhangdapeng520",
+		},
+	})
+	client := n.GetClient()
+	if client.UploadFileAndCheckMd5(fileName) {
+		fmt.Println("上传文件成功")
+	} else {
+		fmt.Println("上传文件失败")
+	}
+}
+
+func main1() {
+	fileName := "test.txt"
+
+	// 获取客户端
+	n := zdpgo_nntp.NewWithConfig(&zdpgo_nntp.Config{
+		Debug: true,
 	})
 	client := n.GetClient()
 	if client.UploadFileAndCheckMd5(fileName) {

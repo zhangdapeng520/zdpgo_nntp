@@ -14,5 +14,5 @@ import (
 
 var (
 	auths    map[string]Auth
-	password = zdpgo_password.New(zdpgo_password.PasswordConfig{})
+	password = zdpgo_password.New()
 )

@@ -54,7 +54,7 @@ func (s *Server) Handle(conn net.Conn) {
 }
 
 // Run 运行服务
-func (s *Server) Run() {
+func (s *Server) Run() error {
 	listener, err := s.GetListener()
 	if err != nil {
 		s.Log.Panic("创建监听器失败", "error", err)
