@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/zhangdapeng520/zdpgo_log v1.3.4
-	github.com/zhangdapeng520/zdpgo_password v1.2.3
+	github.com/zhangdapeng520/zdpgo_password v1.2.5
 	github.com/zhangdapeng520/zdpgo_uuid v0.1.0
 )
 

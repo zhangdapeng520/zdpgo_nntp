@@ -9,13 +9,11 @@ package zdpgo_nntp
 */
 
 type Config struct {
-	Debug       bool            `yaml:"debug" json:"debug"`
-	LogFilePath string          `yaml:"log_file_path" json:"log_file_path"`
-	Auths       map[string]Auth `yaml:"auths" json:"auths"`
-	Server      HttpInfo        `yaml:"server" json:"server"`
-	Client      HttpInfo        `yaml:"client" json:"client"`
-	Group       string          `yaml:"group" json:"group"`
-	From        string          `yaml:"from" json:"from"`
+	Auths  map[string]Auth `yaml:"auths" json:"auths"`
+	Server HttpInfo        `yaml:"server" json:"server"`
+	Client HttpInfo        `yaml:"client" json:"client"`
+	Group  string          `yaml:"group" json:"group"`
+	From   string          `yaml:"from" json:"from"`
 }
 
 type HttpInfo struct {

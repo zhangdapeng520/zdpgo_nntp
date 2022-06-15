@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/zhangdapeng520/zdpgo_log"
 	"github.com/zhangdapeng520/zdpgo_nntp"
 )
 
@@ -14,12 +15,12 @@ import (
 
 func main() {
 	// 获取监听器
+	log := zdpgo_log.NewWithDebug(true, "log.log")
 	n := zdpgo_nntp.NewWithConfig(&zdpgo_nntp.Config{
-		Debug: true,
 		Server: zdpgo_nntp.HttpInfo{
 			Port: 8887,
 		},
-	})
+	}, log)
 	server := n.GetServer()
 	server.Run()
 }

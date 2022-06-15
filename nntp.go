@@ -3,6 +3,7 @@ package zdpgo_nntp
 import (
 	"github.com/zhangdapeng520/zdpgo_log"
 	nntpserver "github.com/zhangdapeng520/zdpgo_nntp/gonntp/server"
+	"github.com/zhangdapeng520/zdpgo_password"
 )
 
 /*
@@ -13,27 +14,27 @@ import (
 @Description:
 */
 
-var Log = zdpgo_log.NewWithDebug(true, "logs/zdpgo/zdpgo_nntp.log")
+var (
+	Log      *zdpgo_log.Log
+	auths    map[string]Auth
+	password = zdpgo_password.New(Log)
+)
 
 type Nntp struct {
 	Config *Config
 	Log    *zdpgo_log.Log
 }
 
-func New() *Nntp {
-	return NewWithConfig(&Config{})
+func New(log *zdpgo_log.Log) *Nntp {
+	return NewWithConfig(&Config{}, log)
 }
 
-func NewWithConfig(config *Config) *Nntp {
+func NewWithConfig(config *Config, log *zdpgo_log.Log) *Nntp {
 	n := &Nntp{}
 
 	// 日志
-	if config.LogFilePath == "" {
-		config.LogFilePath = "logs/zdpgo/zdpgo_nntp.log"
-	}
-	n.Log = zdpgo_log.NewWithDebug(config.Debug, config.LogFilePath)
-	nntpserver.Log = n.Log
-	Log = n.Log
+	Log = log
+	nntpserver.Log = log
 
 	// 配置
 	if config.Server.Host == "" {
@@ -78,7 +79,6 @@ func NewWithConfig(config *Config) *Nntp {
 func (n *Nntp) GetClient() *Client {
 	return &Client{
 		Config: n.Config,
-		Log:    n.Log,
 	}
 }
 
@@ -86,7 +86,6 @@ func (n *Nntp) GetClient() *Client {
 func (n *Nntp) GetServer() *Server {
 	return &Server{
 		Config:     n.Config,
-		Log:        n.Log,
 		NntpServer: nntpserver.NewServer(&DefaultBackend),
 	}
 }

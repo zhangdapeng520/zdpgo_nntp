@@ -2,7 +2,6 @@ package zdpgo_nntp
 
 import (
 	"fmt"
-	"github.com/zhangdapeng520/zdpgo_log"
 	nntpserver "github.com/zhangdapeng520/zdpgo_nntp/gonntp/server"
 	"net"
 )
@@ -18,7 +17,6 @@ import (
 // Server NNTP服务
 type Server struct {
 	Config     *Config
-	Log        *zdpgo_log.Log
 	NntpServer *nntpserver.Server
 }
 
@@ -33,14 +31,14 @@ func (s *Server) GetListener() (*net.TCPListener, error) {
 	// 获取地址
 	addr, err := net.ResolveTCPAddr("tcp", s.GetAddress())
 	if err != nil {
-		s.Log.Error("解析目标地址失败", "error", err)
+		Log.Error("解析目标地址失败", "error", err)
 		return nil, err
 	}
 
 	// 创建监听
 	listener, err := net.ListenTCP("tcp", addr)
 	if err != nil {
-		s.Log.Error("创建监听失败", "error", err)
+		Log.Error("创建监听失败", "error", err)
 		return nil, err
 	}
 
@@ -57,7 +55,7 @@ func (s *Server) Handle(conn net.Conn) {
 func (s *Server) Run() error {
 	listener, err := s.GetListener()
 	if err != nil {
-		s.Log.Panic("创建监听器失败", "error", err)
+		Log.Panic("创建监听器失败", "error", err)
 	}
 	defer listener.Close()
 
@@ -66,7 +64,7 @@ func (s *Server) Run() error {
 	for {
 		conn, err = listener.AcceptTCP()
 		if err != nil {
-			s.Log.Error("获取客户端连接失败", "error", err)
+			Log.Error("获取客户端连接失败", "error", err)
 		}
 		go s.Handle(conn)
 	}

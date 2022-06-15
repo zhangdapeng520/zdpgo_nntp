@@ -10,12 +10,10 @@ github.com/rogpeppe/go-internal v1.6.1 h1:/FiVV8dS/e+YqF2JvO3yXRFbBLTIuSDkuC7aBO
 github.com/rogpeppe/go-internal v1.6.1/go.mod h1:xXDCJY+GAPziupqXw64V24skbSoqbTEfhy4qGm1nDQc=
 github.com/zhangdapeng520/zdpgo_log v1.3.4 h1:hHB+ELh0zaBe5NLyASTDZ1qFnpkiFcOM582Phen1B7w=
 github.com/zhangdapeng520/zdpgo_log v1.3.4/go.mod h1:Qnr8tZCpmDWqRfJpw0r5ClUNqdOJwLNXIyXA2IGXv6k=
-github.com/zhangdapeng520/zdpgo_password v1.1.9 h1:M6mqttOd8BKOnRwxi4y5wABuNyGH1BbLDrgdVUhoa0M=
-github.com/zhangdapeng520/zdpgo_password v1.1.9/go.mod h1:a5k1QLtuTm5Gzjnn+13UqJKTul/xFAl0cPYvsRC35+I=
+github.com/zhangdapeng520/zdpgo_password v1.2.5 h1:4LY//evYBGOcrBQ+KUJCJTOYd6WKG/aBtBFZwAG/Rxs=
+github.com/zhangdapeng520/zdpgo_password v1.2.5/go.mod h1:WDB63eYpqFkh83dHUK5uOEkc6GvZWxvXo0UASHuhYnY=
 github.com/zhangdapeng520/zdpgo_uuid v0.1.0 h1:dRpS6+v3bbPYqL31LjZdPbHRYW3sRZ1vLXrl0G8+NFQ=
 github.com/zhangdapeng520/zdpgo_uuid v0.1.0/go.mod h1:oUpDRHDztoeEqL53OGoTuoKsCOzm5XXdywu1emdyJcA=
-golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064 h1:S25/rfnfsMVgORT4/J61MJ7rdyseOZOyvLIrZEZ7s6s=
-golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
 gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c h1:Hei/4ADfdWqJk1ZMxUNpqntNwaWcugrBjAiHlqqRiVk=
 gopkg.in/errgo.v2 v2.1.0/go.mod h1:hNsd1EY+bozCKY1Ytp96fpM3vjJbqLJn88ws8XvfDNI=

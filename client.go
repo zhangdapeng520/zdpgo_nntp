@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/zhangdapeng520/zdpgo_log"
 	"github.com/zhangdapeng520/zdpgo_nntp/cnntp"
 	"github.com/zhangdapeng520/zdpgo_uuid"
 	"io/ioutil"
@@ -23,7 +22,6 @@ import (
 // Client 客户端对象
 type Client struct {
 	Config *Config
-	Log    *zdpgo_log.Log
 }
 
 // GetAddress 获取连接地址
@@ -40,13 +38,13 @@ func (c *Client) PostBytes(title string, data []byte) (*Response, error) {
 	// 连接NNTP服务
 	conn, err := cnntp.Dial("tcp", c.GetAddress())
 	if err != nil {
-		c.Log.Error("获取NNTP连接对象失败", "error", err)
+		Log.Error("获取NNTP连接对象失败", "error", err)
 		return nil, err
 	}
 
 	// 权限校验
 	if err = conn.Authenticate(c.Config.Client.Username, c.Config.Client.Password); err != nil {
-		c.Log.Error("权限校验失败", "error", err)
+		Log.Error("权限校验失败", "error", err)
 		return nil, err
 	}
 
@@ -71,7 +69,7 @@ func (c *Client) PostBytes(title string, data []byte) (*Response, error) {
 	// 上传文章
 	err = conn.Post(&newArticle)
 	if err != nil {
-		c.Log.Error("上传数据失败", "error", err)
+		Log.Error("上传数据失败", "error", err)
 		return nil, err
 	}
 
@@ -84,13 +82,13 @@ func (c *Client) AddArticle(article *Article) error {
 	// 连接NNTP服务
 	conn, err := cnntp.Dial("tcp", c.GetAddress())
 	if err != nil {
-		c.Log.Error("获取NNTP连接对象失败", "error", err)
+		Log.Error("获取NNTP连接对象失败", "error", err)
 		return err
 	}
 
 	// 权限校验
 	if err = conn.Authenticate(c.Config.Client.Username, c.Config.Client.Password); err != nil {
-		c.Log.Error("权限校验失败", "error", err)
+		Log.Error("权限校验失败", "error", err)
 		return err
 	}
 
@@ -127,7 +125,7 @@ func (c *Client) AddArticle(article *Article) error {
 	// 上传文章
 	err = conn.Post(&newArticle)
 	if err != nil {
-		c.Log.Error("上传数据失败", "error", err)
+		Log.Error("上传数据失败", "error", err)
 		return err
 	}
 
@@ -140,20 +138,20 @@ func (c *Client) GetArticle(uuid string) (*Article, error) {
 	// 连接NNTP服务
 	conn, err := cnntp.Dial("tcp", c.GetAddress())
 	if err != nil {
-		c.Log.Error("获取NNTP连接对象失败", "error", err)
+		Log.Error("获取NNTP连接对象失败", "error", err)
 		return nil, err
 	}
 
 	// 权限校验
 	if err = conn.Authenticate(c.Config.Client.Username, c.Config.Client.Password); err != nil {
-		c.Log.Error("权限校验失败", "error", err)
+		Log.Error("权限校验失败", "error", err)
 		return nil, err
 	}
 
 	// 获取分组
 	_, _, _, err = conn.Group(c.Config.Group)
 	if err != nil {
-		c.Log.Error("获取分组失败", "error", err)
+		Log.Error("获取分组失败", "error", err)
 		return nil, err
 	}
 
@@ -166,7 +164,7 @@ func (c *Client) GetArticle(uuid string) (*Article, error) {
 	articleId := fmt.Sprintf("<message-%s@zdpgo.com>", uuid)
 	nntpArticle, err := conn.Article(articleId)
 	if err != nil {
-		c.Log.Error("通过ID获取文章失败", "error", err)
+		Log.Error("通过ID获取文章失败", "error", err)
 		return nil, err
 	}
 
@@ -186,7 +184,7 @@ func (c *Client) GetArticle(uuid string) (*Article, error) {
 	// 读取文章的内容
 	body, err := ioutil.ReadAll(nntpArticle.Body)
 	if err != nil {
-		c.Log.Error("读取文章内容失败", "error", err)
+		Log.Error("读取文章内容失败", "error", err)
 		return nil, err
 	}
 	article.Content = string(body)
@@ -200,7 +198,7 @@ func (c *Client) UploadFileAndCheckMd5(filePath string) bool {
 	// 读取文件
 	fileData, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		c.Log.Error("读取文件失败", "error", err, "filePath", filePath)
+		Log.Error("读取文件失败", "error", err, "filePath", filePath)
 		return false
 	}
 	md5Temp := password.Hash.Md5.EncryptStringNoKey(strings.TrimSpace(string(fileData)))
@@ -211,14 +209,14 @@ func (c *Client) UploadFileAndCheckMd5(filePath string) bool {
 	}
 	err = c.AddArticle(article)
 	if err != nil {
-		c.Log.Error("上传文件失败", "error", err)
+		Log.Error("上传文件失败", "error", err)
 		return false
 	}
 
 	// 获取文章
 	getArticle, err := c.GetArticle(article.Uuid)
 	if err != nil {
-		c.Log.Error("获取上传内容失败", "error", err)
+		Log.Error("获取上传内容失败", "error", err)
 		return false
 	}
 	md5Content := password.Hash.Md5.EncryptStringNoKey(strings.TrimSpace(getArticle.Content))
