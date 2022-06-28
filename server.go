@@ -31,14 +31,12 @@ func (s *Server) GetListener() (*net.TCPListener, error) {
 	// 获取地址
 	addr, err := net.ResolveTCPAddr("tcp", s.GetAddress())
 	if err != nil {
-		Log.Error("解析目标地址失败", "error", err)
 		return nil, err
 	}
 
 	// 创建监听
 	listener, err := net.ListenTCP("tcp", addr)
 	if err != nil {
-		Log.Error("创建监听失败", "error", err)
 		return nil, err
 	}
 
@@ -55,7 +53,6 @@ func (s *Server) Handle(conn net.Conn) {
 func (s *Server) Run() error {
 	listener, err := s.GetListener()
 	if err != nil {
-		Log.Panic("创建监听器失败", "error", err)
 	}
 	defer listener.Close()
 
@@ -64,7 +61,6 @@ func (s *Server) Run() error {
 	for {
 		conn, err = listener.AcceptTCP()
 		if err != nil {
-			Log.Error("获取客户端连接失败", "error", err)
 		}
 		go s.Handle(conn)
 	}

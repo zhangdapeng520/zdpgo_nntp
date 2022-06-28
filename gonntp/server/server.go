@@ -2,10 +2,8 @@
 package nntpserver
 
 import (
+	"errors"
 	"fmt"
-	"github.com/zhangdapeng520/zdpgo_log"
-
-	//"github.com/dustin/go-nntp"
 	"github.com/zhangdapeng520/zdpgo_nntp/gonntp"
 
 	"io"
@@ -21,10 +19,6 @@ type NNTPError struct {
 	Code int
 	Msg  string
 }
-
-var (
-	Log *zdpgo_log.Log
-)
 
 // ErrNoSuchGroup is returned for a request for a group that can't be found.
 var ErrNoSuchGroup = &NNTPError{411, "No such newsgroup"}
@@ -140,7 +134,7 @@ func (s *session) dispatchCommand(cmd string, args []string, c *textproto.Conn) 
 	if !found {
 		handler, found = s.server.Handlers[""]
 		if !found {
-			Log.Error("没有默认的处理器")
+			return errors.New("没有默认的处理器")
 		}
 	}
 	return handler(args, s, c)
@@ -169,7 +163,6 @@ func (s *Server) Process(nc net.Conn) {
 
 		// 获取命令
 		cmd := strings.Split(l, " ")
-		Log.Debug("读取到命令", "cmd", cmd)
 		var args []string
 		if len(cmd) > 1 {
 			args = cmd[1:]
@@ -185,7 +178,6 @@ func (s *Server) Process(nc net.Conn) {
 			case isNNTPError:
 				c.PrintfLine(err.Error()) // 返回错误信息
 			default:
-				Log.Error("分发命令失败", "error", err)
 				return
 			}
 		}
@@ -535,7 +527,6 @@ func handleMode(args []string, s *session, c *textproto.Conn) error {
 
 // 处理权限校验信息
 func handleAuthInfo(args []string, s *session, c *textproto.Conn) error {
-	Log.Debug("处理权限及校验。。。")
 	if len(args) < 2 {
 		return ErrSyntax
 	}
@@ -552,10 +543,7 @@ func handleAuthInfo(args []string, s *session, c *textproto.Conn) error {
 
 	// 继续
 	c.PrintfLine("350 Continue")
-	a, err := c.ReadLine()
-	if err != nil {
-		Log.Error("读取一行失败", "error", err)
-	}
+	a, _ := c.ReadLine()
 
 	// 新的命令
 	parts := strings.SplitN(a, " ", 3)

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/zhangdapeng520/zdpgo_log"
 	"github.com/zhangdapeng520/zdpgo_nntp"
 )
 
@@ -15,9 +14,6 @@ import (
 */
 
 func main() {
-	log := zdpgo_log.NewWithDebug(true, "log.log")
-	fileName := "log.log"
-
 	// 获取客户端
 	n := zdpgo_nntp.NewWithConfig(&zdpgo_nntp.Config{
 		Client: zdpgo_nntp.HttpInfo{
@@ -26,9 +22,9 @@ func main() {
 			Username: "zhangdapeng520",
 			Password: "zhangdapeng520",
 		},
-	}, log)
+	})
 	client := n.GetClient()
-	if client.UploadFileAndCheckMd5(fileName) {
+	if client.UploadFileAndCheckMd5("README.md") {
 		fmt.Println("上传文件成功")
 	} else {
 		fmt.Println("上传文件失败")

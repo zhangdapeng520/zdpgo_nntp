@@ -173,7 +173,6 @@ func (tb *ServerBackend) GetArticles(group *nntp.Group,
 
 	gs, ok := tb.groups[group.Name]
 	if !ok {
-		Log.Error("获取分组失败", "name", group.Name)
 		return nil, nntpserver.ErrNoSuchGroup
 	}
 
@@ -219,9 +218,8 @@ func (tb *ServerBackend) Post(article *nntp.Article) error {
 	// 读取文章内容
 	var b []byte
 	buf := bytes.NewBuffer(b)
-	n, err := io.Copy(buf, article.Body)
+	_, err := io.Copy(buf, article.Body)
 	if err != nil {
-		Log.Error("读取文章内容失败", "error", err, "length", n)
 		return err
 	}
 
@@ -233,7 +231,6 @@ func (tb *ServerBackend) Post(article *nntp.Article) error {
 	}
 	msgId := a.headers.Get("Message-Id")
 	if _, ok := tb.articles[msgId]; ok {
-		Log.Warning("该文章已存在", "msgId", msgId)
 		return nntpserver.ErrPostingFailed
 	}
 
@@ -255,7 +252,6 @@ func (tb *ServerBackend) Post(article *nntp.Article) error {
 			}
 			a.refCount++
 			g.group.Count = int64(g.articles.Len())
-			Log.Debug("保存文章成功", "msgId", msgId, "value", g.articles.Value, "groupName", g.group.Name)
 		}
 	}
 
@@ -275,7 +271,6 @@ func (s *ServerBackend) Authorized() bool {
 
 // Authenticate 校验用户名和密码
 func (s *ServerBackend) Authenticate(user, pass string) (nntpserver.Backend, error) {
-	Log.Debug("后台引擎处理权限校验", "user", user, "pass", pass)
 	for k, v := range auths {
 		if user == k && pass == v.Password {
 			s.isLogin = true

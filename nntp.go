@@ -1,9 +1,9 @@
 package zdpgo_nntp
 
 import (
-	"github.com/zhangdapeng520/zdpgo_log"
+	"crypto/md5"
+	"encoding/hex"
 	nntpserver "github.com/zhangdapeng520/zdpgo_nntp/gonntp/server"
-	"github.com/zhangdapeng520/zdpgo_password"
 )
 
 /*
@@ -15,26 +15,19 @@ import (
 */
 
 var (
-	Log      *zdpgo_log.Log
-	auths    map[string]Auth
-	password = zdpgo_password.New(Log)
+	auths map[string]Auth
 )
 
 type Nntp struct {
 	Config *Config
-	Log    *zdpgo_log.Log
 }
 
-func New(log *zdpgo_log.Log) *Nntp {
-	return NewWithConfig(&Config{}, log)
+func New() *Nntp {
+	return NewWithConfig(&Config{})
 }
 
-func NewWithConfig(config *Config, log *zdpgo_log.Log) *Nntp {
+func NewWithConfig(config *Config) *Nntp {
 	n := &Nntp{}
-
-	// 日志
-	Log = log
-	nntpserver.Log = log
 
 	// 配置
 	if config.Server.Host == "" {
@@ -88,4 +81,11 @@ func (n *Nntp) GetServer() *Server {
 		Config:     n.Config,
 		NntpServer: nntpserver.NewServer(&DefaultBackend),
 	}
+}
+
+// Md5 校验MD5
+func (n *Nntp) Md5(data string) string {
+	h := md5.New()
+	h.Write([]byte(data))
+	return hex.EncodeToString(h.Sum(nil))
 }
